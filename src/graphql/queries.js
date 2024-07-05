@@ -10,3 +10,14 @@ export const GET_USERS = gql`
     }
   }
 `;
+
+export const GET_USER_BY_ID = gql`
+  query ($id: ID!) {
+    user(id: $id) {
+      id
+      username
+      surname
+      age
+    }
+  }
+`;

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { DELETE_USER, EDIT_USER } from 'graphql/mutations';
-import { GET_USERS } from 'graphql/queries';
+import { GET_USER_BY_ID, GET_USERS } from 'graphql/queries';
 
 export const UserListItem = ({ id, username, surname, age }) => {
   const [deleteUser] = useMutation(DELETE_USER, {
@@ -12,6 +12,10 @@ export const UserListItem = ({ id, username, surname, age }) => {
 
   const [editUser] = useMutation(EDIT_USER, {
     refetchQueries: [{ query: GET_USERS }],
+  });
+
+  const [getUserInfo, { called }] = useLazyQuery(GET_USER_BY_ID, {
+    variables: { id },
   });
 
   const onDeleteUserBtnClick = () => {
@@ -29,6 +33,14 @@ export const UserListItem = ({ id, username, surname, age }) => {
     });
   };
 
+  const onGetInfoBtnClick = () => {
+    if (!called) {
+      getUserInfo().then(({ data }) => {
+        console.log(data);
+      });
+    }
+  };
+
   return (
     <div>
       <p>Id: {id}</p>
@@ -37,6 +49,7 @@ export const UserListItem = ({ id, username, surname, age }) => {
       <p>Age: {age}</p>
       <button onClick={onDeleteUserBtnClick}>delete user</button>
       <button onClick={onEditUserBtnClick}>edit user</button>
+      <button onClick={onGetInfoBtnClick}>get info about user</button>
     </div>
   );
 };
